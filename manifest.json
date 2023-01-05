@@ -1,16 +1,16 @@
 {
-  "id": "dev.replugged.PluginTemplate",
-  "name": "Plugin Template",
-  "description": "A plugin template",
+  "id": "xyz.wagyourtail.RPCodeblocks",
+  "name": "Better Codeblocks",
+  "description": "port of pc-codeblocks, aka Better Codeblocks",
   "author": {
-    "name": "replugged",
-    "discordID": "1000992611840049192",
-    "github": "replugged-org"
+    "name": "Wagyourtail",
+    "discordID": "100748674849579008",
+    "github": "wagyourtail"
   },
-  "version": "1.0.3",
+  "version": "1.1.0",
   "updater": {
     "type": "github",
-    "id": "replugged-org/plugin-template"
+    "id": "wagyourtail/rp-codeblocks"
   },
   "license": "MIT",
   "type": "replugged-plugin",
