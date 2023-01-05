@@ -11,7 +11,7 @@ interface CodeBlockContent {
 
 class BetterCodeblocks {
   inject = new Injector();
-  logger = Logger.plugin("RC-Codeblocks");
+  logger = Logger.plugin("RPCodeblocks");
 
   public async start(): Promise<void> {
     await this.patchCodeblocks();
