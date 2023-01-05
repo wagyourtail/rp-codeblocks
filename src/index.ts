@@ -2,6 +2,12 @@ import {common, Injector, Logger, util, webpack} from "replugged";
 const {React, hljs} = common;
 import "./style.css"
 
+declare const DiscordNative: {
+  clipboard: {
+    copy: (s: string) => void;
+  }
+}
+
 interface CodeBlockContent {
   lang: string
   content: string
@@ -86,8 +92,9 @@ class BetterCodeblocks {
     const i18n = webpack.getByProps("Messages");
     const i18nMessages = i18n?.Messages as {ACCOUNT_USERNAME_COPY_SUCCESS_1: string, COPY: string};
     const { target } = e as { target: HTMLElement | null };
-    if (target == null) return;
+    if (target == null) throw new Error("Target is null");
     if (target.classList.contains('copied')) {
+      this.logger.log('Already copied');
       return;
     }
 
@@ -100,7 +107,7 @@ class BetterCodeblocks {
     }, 1e3);
 
     const code = [ ...target.parentElement!.querySelectorAll('td:last-child') ].map(t => t.textContent).join('\n');
-    navigator.clipboard.writeText(code).catch(this.logger.error);
+    DiscordNative.clipboard.copy(code);
   }
 
   private forceUpdate(): void {
