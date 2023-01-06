@@ -1,4 +1,5 @@
-import {common, Injector, Logger, util, webpack} from "replugged";
+import {ReactElement} from "react";
+import {Injector, Logger, common, util, webpack} from "replugged";
 const {React, hljs} = common;
 import "./style.css"
 
@@ -16,8 +17,8 @@ interface CodeBlockContent {
 }
 
 class BetterCodeblocks {
-  inject = new Injector();
-  logger = Logger.plugin("RPCodeblocks");
+  private inject = new Injector();
+  private logger = Logger.plugin("RPCodeblocks");
 
   public async start(): Promise<void> {
     await this.patchCodeblocks();
@@ -32,22 +33,20 @@ class BetterCodeblocks {
       }
     }>(webpack.filters.byProps("parse", "parseTopic"));
     this.logger.log(parser);
-    this.inject.after(parser.defaultRules.codeBlock, "react", ([content, t, o], res) => {
-        this.injectCodeblock(content, res as {props: {children: React.ReactElement}});
+    this.inject.after(parser.defaultRules.codeBlock, "react", ([content], res) => {
+        this.injectCodeblock(content, res as {props: {children: ReactElement}});
     });
     this.forceUpdate();
   }
 
-  private injectCodeblock(content: CodeBlockContent, res: {props: {children: React.ReactElement}}): void {
+  private injectCodeblock(content: CodeBlockContent, res: {props: {children: ReactElement}}): void {
     const render = res?.props?.children?.props?.render;
 
     res.props.children.props.render = (props: unknown) => {
       const codeblock = render(props);
       const codeElement = codeblock.props;
 
-      const classes = codeElement.className.split(' ');
-
-      const lang = content.lang;
+      const {lang} = content;
       const lines = codeElement.dangerouslySetInnerHTML
           ? codeElement.dangerouslySetInnerHTML.__html
               // Ensure this no span on multiple lines
@@ -67,7 +66,7 @@ class BetterCodeblocks {
     };
   }
 
-  renderCodeblock(lang: string | null | undefined, lines: string[], dangerous: boolean): React.ReactElement {
+  private renderCodeblock(lang: string | null | undefined, lines: string[], dangerous: boolean): React.ReactElement {
     lang = lang != null ? (hljs.getLanguage(lang) as {name: string} | null)?.name : null;
 
     const i18n = webpack.getByProps("Messages");
@@ -78,6 +77,7 @@ class BetterCodeblocks {
         React.createElement('table', { className: 'powercord-codeblock-table' },
             ...lines.map((line, i) => React.createElement('tr', null,
                 React.createElement('td', null, i + 1),
+                // eslint-disable-next-line @typescript-eslint/naming-convention
                 React.createElement('td', lang && dangerous ? { dangerouslySetInnerHTML: { __html: line } } : { children: line })
             ))
         ),
